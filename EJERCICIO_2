@@ -1,0 +1,56 @@
+#   para ajustar un conjunto de datos
+#
+#           Autor:
+#   María Alexandra Guardia Canche 
+#   alexandra.guardia.25@gmail.com
+#   Version 1.1 : 14/04/2025 
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
+from tabulate import tabulate
+
+# Datos experimentales: Distancia (cm) vs Temperatura (°C)
+distancia = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0])
+temperatura = np.array([250, 220, 180, 150, 130, 125])
+
+# Crear interpolaciones
+lineal = interp1d(distancia, temperatura, kind='linear')
+cuadratica = interp1d(distancia, temperatura, kind='quadratic')
+cubica = interp1d(distancia, temperatura, kind='cubic')
+
+# Evaluar en puntos cada 0.5 cm
+x_eval = np.linspace(0, 5, 11)
+y_lineal = lineal(x_eval)
+y_cuadratica = cuadratica(x_eval)
+y_cubica = cubica(x_eval)
+
+# Crear tabla con resultados
+tabla = []
+for i in range(len(x_eval)):
+    tabla.append([
+        f"{x_eval[i]:.1f}",
+        f"{y_lineal[i]:.2f}",
+        f"{y_cuadratica[i]:.2f}",
+        f"{y_cubica[i]:.2f}"
+    ])
+
+# Mostrar resultados en tabla
+headers = ["Distancia (cm)", "Lineal (°C)", "Cuadrática (°C)", "Cúbica (°C)"]
+print("\nTabla comparativa de interpolaciones:")
+print(tabulate(tabla, headers=headers, tablefmt="pipe"))
+
+# Graficar resultados
+x_vals = np.linspace(0, 5, 200)
+plt.figure(figsize=(10, 6))
+plt.scatter(distancia, temperatura, color='red', label='Datos experimentales')
+plt.plot(x_vals, lineal(x_vals), '--', label='Interpolación Lineal', color='blue')
+plt.plot(x_vals, cuadratica(x_vals), '-.', label='Interpolación Cuadrática', color='green')
+plt.plot(x_vals, cubica(x_vals), label='Interpolación Cúbica', color='purple')
+plt.xlabel('Distancia (cm)')
+plt.ylabel('Temperatura (°C)')
+plt.title('Interpolación de Temperatura en un Motor')
+plt.grid(True)
+plt.legend()
+plt.savefig('temperatura_interpolada.png')
+plt.show()
